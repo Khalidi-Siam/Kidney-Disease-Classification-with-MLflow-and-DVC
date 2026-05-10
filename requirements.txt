@@ -1,0 +1,14 @@
+tensorflow
+pandas 
+dvc
+mlflow
+numpy
+pyYAML
+tqdm
+joblib
+types-PyYAML
+scipy
+Flask
+Flask-Cors
+gdown
+-e .

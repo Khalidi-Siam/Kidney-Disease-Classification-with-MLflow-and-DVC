@@ -18,14 +18,14 @@ with open('README.md', 'r', encoding='utf-8') as f:
 
 
 __version__ = '0.0.1'
-REPO_NAME = "Kidney-Disease-Classification"
+REPO_NAME = "kidney-Disease-Classification"
 AUTHOR_USER_NAME = "khalidi-siam"
 SRC_REPO = "Kidney-disease-classification with MLflow and DVC"
 AUTHOR_EMAIL = "siam074@yahoo.com"
 
 
 setup(
-    name='Kidney-disease-classification',
+    name='kidney-disease-classification',
     version='0.0.1',
     author="Khalidi Siam",
     author_email="siam074@yahoo.com",
