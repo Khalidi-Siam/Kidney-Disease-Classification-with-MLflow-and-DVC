@@ -1,6 +1,6 @@
 from kidney_disease_classification.constants import *
 from kidney_disease_classification.utils.common import read_yaml, create_directories
-from kidney_disease_classification.entity.config_entity import DataIngestionConfig
+from kidney_disease_classification.entity.config_entity import DataIngestionConfig, DataValitationConfig
 
 
 class ConfigurationManager:
@@ -29,4 +29,17 @@ class ConfigurationManager:
         )
 
         return data_ingestion_config
+    
+    def get_data_validation_config(self) -> DataValitationConfig:
+        config = self.config["data_validation"]
+
+        create_directories([config["root_dir"]])
+
+        data_validation_config = DataValitationConfig(
+            root_dir=config["root_dir"],
+            unzip_data_dir=config["unzip_data_dir"],
+            STATUS_FILE=config["STATUS_FILE"]
+        )
+
+        return data_validation_config
       
