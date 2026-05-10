@@ -1,6 +1,7 @@
 from kidney_disease_classification.constants import *
 from kidney_disease_classification.utils.common import read_yaml, create_directories
-from kidney_disease_classification.entity.config_entity import DataIngestionConfig, DataValitationConfig, PrepareBaseModelConfig
+from kidney_disease_classification.entity.config_entity import DataIngestionConfig, DataValitationConfig, PrepareBaseModelConfig, TrainingConfig
+import os
 
 
 class ConfigurationManager:
@@ -61,4 +62,29 @@ class ConfigurationManager:
         )
 
         return prepare_base_model_config
+    
+
+    def get_training_config(self) -> TrainingConfig:
+        config = self.config["training"]
+        self.params = self.params
+        prepare_base_model = self.config["prepare_base_model"]
+
+        training_data = os.path.join(
+            self.config["data_ingestion"]["unzip_dir"],
+            "kidney-ct-scan-image" 
+        )
+
+        create_directories([Path(config["root_dir"])])
+
+        training_config = TrainingConfig(
+            root_dir=Path(config["root_dir"]),
+            trained_model_path=Path(config["trained_model_path"]),
+            updated_base_model_path=Path(prepare_base_model["updated_base_model_path"]),
+            training_data=Path(training_data),
+            params_epochs=self.params["EPOCHS"],
+            params_batch_size=self.params["BATCH_SIZE"],
+            params_is_augmentation=self.params["AUGMENTATION"],
+            params_image_size=self.params["IMAGE_SIZE"]
+        )
+        return training_config
       
