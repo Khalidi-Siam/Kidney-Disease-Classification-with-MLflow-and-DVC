@@ -11,10 +11,11 @@ class DataIngestionConfig:
 
 
 @dataclass(frozen=True)
-class DataValitationConfig:
+class DataValidationConfig:
     root_dir: Path
-    unzip_data_dir: Path
-    STATUS_FILE: Path
+    dataset_dir: Path
+    status_file: Path
+    report_file: Path
 
 
 @dataclass(frozen=True)
