@@ -19,6 +19,14 @@ class DataValidationConfig:
 
 
 @dataclass(frozen=True)
+class DataTransformationConfig:
+    root_dir: Path
+    dataset_dir: Path
+    status_file: Path
+    transformed_dir: Path
+
+
+@dataclass(frozen=True)
 class PrepareBaseModelConfig:
     root_dir: Path
     base_model_path: Path
