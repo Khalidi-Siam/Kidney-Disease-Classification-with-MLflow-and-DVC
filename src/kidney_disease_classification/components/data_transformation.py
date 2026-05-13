@@ -1,5 +1,4 @@
 import os
-from torchvision import transforms
 import random
 import sys
 import shutil
@@ -92,27 +91,6 @@ class DataTransformation:
             dst_path = dst_dir / src.name
 
             shutil.copy2(src, dst_path)
-
-    # ---------------------------
-    # 5. CREATE TRANSFORMS
-    # ---------------------------
-    def get_transforms(self):
-        train_transform = transforms.Compose([
-            transforms.Resize(self.img_size),
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomRotation(10),
-            transforms.ToTensor(),
-            transforms.Normalize([0.5], [0.5])
-        ])
-
-        val_transform = transforms.Compose([
-            transforms.Resize(self.img_size),
-            transforms.ToTensor(),
-            transforms.Normalize([0.5], [0.5])
-        ])
-
-        return train_transform, val_transform
-
     # ---------------------------
     # 6. MAIN METHOD
     # ---------------------------

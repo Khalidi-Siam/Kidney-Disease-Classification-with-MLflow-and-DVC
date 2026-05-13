@@ -22,13 +22,19 @@ data_transformation:
   transformed_dir: artifacts/data_transformation/transformed_data
 
 
-
-prepare_base_model:
-  root_dir: artifacts/prepare_base_model
-  base_model_path: artifacts/prepare_base_model/base_model.h5
-  updated_base_model_path: artifacts/prepare_base_model/base_model_updated.h5
-
-
 training:
   root_dir: artifacts/training
-  trained_model_path: artifacts/training/model.h5
+  dataset_dir: artifacts/data_transformation/transformed_data
+
+  model_dir: artifacts/training/model
+  model_name: best_model.pth
+
+  log_dir: artifacts/training/logs
+
+  device: auto   # auto = cuda if available else cpu
+
+  save_best_only: True
+  monitor_metric: val_accuracy
+
+  early_stopping: True
+  patience: 5

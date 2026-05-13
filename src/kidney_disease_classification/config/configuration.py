@@ -1,6 +1,6 @@
 from kidney_disease_classification.constants import *
 from kidney_disease_classification.utils.common import read_yaml, create_directories
-from kidney_disease_classification.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, PrepareBaseModelConfig, TrainingConfig
+from kidney_disease_classification.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, TrainingConfig
 import os
 
 
@@ -61,25 +61,6 @@ class ConfigurationManager:
         return data_transformation_config
         
 
-    def get_prepare_base_model_config(self) -> PrepareBaseModelConfig:
-        config = self.config["prepare_base_model"]
-        
-        create_directories([config["root_dir"]])
-
-        prepare_base_model_config = PrepareBaseModelConfig(
-            root_dir=Path(config["root_dir"]),
-            base_model_path=Path(config["base_model_path"]),
-            updated_base_model_path=Path(config["updated_base_model_path"]),
-            params_image_size=self.params["IMAGE_SIZE"],
-            params_learning_rate=self.params["LEARNING_RATE"],
-            params_include_top=self.params["INCLUDE_TOP"],
-            params_weights=self.params["WEIGHTS"],
-            params_classes=self.params["CLASSES"]
-        )
-
-        return prepare_base_model_config
-    
-
     def get_training_config(self) -> TrainingConfig:
         config = self.config["training"]
         self.params = self.params
@@ -101,6 +82,24 @@ class ConfigurationManager:
             params_batch_size=self.params["BATCH_SIZE"],
             params_is_augmentation=self.params["AUGMENTATION"],
             params_image_size=self.params["IMAGE_SIZE"]
+        )
+        return training_config
+    
+
+    def get_training_config(self) -> TrainingConfig:
+        config = self.config["training"]
+
+        create_directories([Path(config["root_dir"])])
+
+        training_config = TrainingConfig(
+            root_dir=Path(config["root_dir"]),
+            dataset_dir=Path(config["dataset_dir"]),
+            model_dir=Path(config["model_dir"]),
+            model_name=config["model_name"],
+            save_best_only=config["save_best_only"],
+            monitor_metric=config["monitor_metric"],
+            early_stopping=config["early_stopping"],
+            patience=config["patience"]
         )
         return training_config
       

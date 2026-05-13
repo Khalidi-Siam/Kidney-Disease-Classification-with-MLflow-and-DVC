@@ -1,85 +1,192 @@
+import os
+import sys
+import torch
+import torch.nn as nn
+from torchvision import datasets, transforms, models
+from torch.utils.data import DataLoader
 from pathlib import Path
 from kidney_disease_classification.entity.config_entity import TrainingConfig
-import tensorflow as tf
-
+from kidney_disease_classification.exception import CustomException
+from kidney_disease_classification.logger import logging
 
 
 class Training:
-    def __init__(self, config: TrainingConfig):
+    def __init__(self, config: TrainingConfig, params):
         self.config = config
+        self.params = params
 
-    
-    def get_base_model(self):
-        self.model = tf.keras.models.load_model(self.config.updated_base_model_path, compile=False)
-        self.model.compile(
-            optimizer=tf.keras.optimizers.Adam(),
-            loss=tf.keras.losses.CategoricalCrossentropy(),
-            metrics=["accuracy"],
-        )
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    def train_valid_generator(self):
+    # ---------------------------
+    # 1. DATA LOADERS (TRAIN + VAL ONLY)
+    # ---------------------------
+    def get_data_loaders(self):
+        try:
+            logging.info("Loading train and validation datasets...")
 
-        datagenerator_kwargs = dict(
-            rescale = 1./255,
-            validation_split=0.20
-        )
+            img_size = tuple(self.params["IMAGE_SIZE"])
 
-        dataflow_kwargs = dict(
-            target_size=self.config.params_image_size[:-1],
-            batch_size=self.config.params_batch_size,
-            interpolation="bilinear"
-        )
+            # Train transform (augmentation only here)
+            train_transform = transforms.Compose([
+                transforms.Resize(img_size),
+                transforms.Grayscale(num_output_channels=3),
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.RandomRotation(10),
+                transforms.ToTensor(),
+                transforms.Normalize([0.5], [0.5])
+            ])
 
-        valid_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
-            **datagenerator_kwargs
-        )
+            # Validation transform (NO augmentation)
+            val_transform = transforms.Compose([
+                transforms.Resize(img_size),
+                transforms.Grayscale(num_output_channels=3),
+                transforms.ToTensor(),
+                transforms.Normalize([0.5], [0.5])
+            ])
 
-        self.valid_generator = valid_datagenerator.flow_from_directory(
-            directory=self.config.training_data,
-            subset="validation",
-            shuffle=False,
-            **dataflow_kwargs
-        )
+            train_dir = Path(self.config.dataset_dir) / "train"
+            val_dir = Path(self.config.dataset_dir) / "val"
 
-        if self.config.params_is_augmentation:
-            train_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
-                rotation_range=40,
-                horizontal_flip=True,
-                width_shift_range=0.2,
-                height_shift_range=0.2,
-                shear_range=0.2,
-                zoom_range=0.2,
-                **datagenerator_kwargs
+            train_dataset = datasets.ImageFolder(train_dir, transform=train_transform)
+            val_dataset = datasets.ImageFolder(val_dir, transform=val_transform)
+
+            train_loader = DataLoader(
+                train_dataset,
+                batch_size=self.params["BATCH_SIZE"],
+                shuffle=True
             )
-        else:
-            train_datagenerator = valid_datagenerator
 
-        self.train_generator = train_datagenerator.flow_from_directory(
-            directory=self.config.training_data,
-            subset="training",
-            shuffle=True,
-            **dataflow_kwargs
-        )
+            val_loader = DataLoader(
+                val_dataset,
+                batch_size=self.params["BATCH_SIZE"],
+                shuffle=False
+            )
 
-    
-    @staticmethod
-    def save_model(path: Path, model: tf.keras.Model):
-        model.save(path)
+            logging.info("Data loaders ready")
 
-    
-    def train(self):
-        self.steps_per_epoch = self.train_generator.samples // self.train_generator.batch_size
-        self.validation_steps = self.valid_generator.samples // self.valid_generator.batch_size
+            return train_loader, val_loader
 
-        self.model.fit(
-            self.train_generator,
-            epochs=self.config.params_epochs,
-            steps_per_epoch=self.steps_per_epoch,
-            validation_steps=self.validation_steps,
-            validation_data=self.valid_generator
-        )
+        except Exception as e:
+            raise CustomException(e, sys)
 
-        self.save_model(
-            path=self.config.trained_model_path,
-            model=self.model
-        )
+    # ---------------------------
+    # 2. MODEL BUILDING
+    # ---------------------------
+    def build_model(self):
+        try:
+            logging.info("Building EfficientNet model...")
+
+            model = models.efficientnet_b0(pretrained=True)
+
+            # Freeze backbone
+            for param in model.features.parameters():
+                param.requires_grad = False
+
+            # Replace classifier
+            in_features = model.classifier[1].in_features
+            model.classifier[1] = nn.Linear(in_features, self.params["NUM_CLASSES"])
+
+            return model.to(self.device)
+
+        except Exception as e:
+            raise CustomException(e, sys)
+
+    # ---------------------------
+    # 3. TRAIN ONE EPOCH
+    # ---------------------------
+    def train_one_epoch(self, model, loader, criterion, optimizer):
+        model.train()
+
+        total_loss = 0
+
+        for images, labels in loader:
+            images = images.to(self.device)
+            labels = labels.to(self.device).float()
+
+            optimizer.zero_grad()
+
+            outputs = model(images).squeeze()
+            loss = criterion(outputs, labels)
+
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+
+        return total_loss / len(loader)
+
+    # ---------------------------
+    # 4. VALIDATION (ONLY FOR MONITORING)
+    # ---------------------------
+    def validate(self, model, loader, criterion):
+        model.eval()
+
+        total_loss = 0
+        correct = 0
+        total = 0
+
+        with torch.no_grad():
+            for images, labels in loader:
+                images = images.to(self.device)
+                labels = labels.to(self.device).float()
+
+                outputs = model(images).squeeze()
+                loss = criterion(outputs, labels)
+
+                total_loss += loss.item()
+
+                preds = torch.sigmoid(outputs) > 0.5
+                correct += (preds == labels).sum().item()
+                total += labels.size(0)
+
+        accuracy = correct / total
+        return total_loss / len(loader), accuracy
+
+    # ---------------------------
+    # 5. TRAINING PIPELINE
+    # ---------------------------
+    def initiate_training(self):
+        try:
+            logging.info("Training stage started")
+
+            train_loader, val_loader = self.get_data_loaders()
+            model = self.build_model()
+
+            criterion = nn.BCEWithLogitsLoss()
+
+            optimizer = torch.optim.Adam(
+                model.parameters(),
+                lr=self.params["LEARNING_RATE"],
+                weight_decay=self.params["WEIGHT_DECAY"]
+            )
+
+            best_val_acc = 0.0
+
+            for epoch in range(self.params["EPOCHS"]):
+                train_loss = self.train_one_epoch(model, train_loader, criterion, optimizer)
+                val_loss, val_acc = self.validate(model, val_loader, criterion)
+
+                logging.info(
+                    f"Epoch [{epoch+1}/{self.params['EPOCHS']}] "
+                    f"Train Loss: {train_loss:.4f} | "
+                    f"Val Loss: {val_loss:.4f} | "
+                    f"Val Acc: {val_acc:.4f}"
+                )
+
+                # Save best model
+                if val_acc > best_val_acc:
+                    best_val_acc = val_acc
+
+                    os.makedirs(self.config.root_dir, exist_ok=True)
+                    model_path = os.path.join(self.config.root_dir, "best_model.pth")
+
+                    torch.save(model.state_dict(), model_path)
+
+                    logging.info(f"Best model saved with accuracy: {best_val_acc:.4f}")
+
+            logging.info("Training stage completed successfully")
+
+            return True
+
+        except Exception as e:
+            raise CustomException(e, sys)
