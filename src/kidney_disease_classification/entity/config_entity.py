@@ -36,3 +36,12 @@ class TrainingConfig:
     monitor_metric: str
     early_stopping: bool
     patience: int
+
+
+@dataclass(frozen=True)
+class EvaluationConfig:
+    root_dir: Path
+    dataset_dir: Path
+    model_path: Path
+    report_file: Path
+    confusion_matrix_file: Path

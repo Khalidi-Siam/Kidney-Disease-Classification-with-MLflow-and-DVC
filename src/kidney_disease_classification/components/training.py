@@ -177,8 +177,7 @@ class Training:
                 if val_acc > best_val_acc:
                     best_val_acc = val_acc
 
-                    os.makedirs(self.config.root_dir, exist_ok=True)
-                    model_path = os.path.join(self.config.root_dir, "best_model.pth")
+                    model_path = os.path.join(self.config.model_dir, self.config.model_name)
 
                     torch.save(model.state_dict(), model_path)
 

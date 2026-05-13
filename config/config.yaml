@@ -38,3 +38,11 @@ training:
 
   early_stopping: True
   patience: 5
+
+
+evaluation:
+  root_dir: artifacts/evaluation
+  dataset_dir: artifacts/data_transformation/transformed_data
+  model_path: artifacts/training/model/best_model.pth
+  report_file: artifacts/evaluation/evaluation_report.json
+  confusion_matrix_file: artifacts/evaluation/confusion_matrix.json
