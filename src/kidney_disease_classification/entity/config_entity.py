@@ -45,3 +45,12 @@ class EvaluationConfig:
     model_path: Path
     report_file: Path
     confusion_matrix_file: Path
+
+
+@dataclass(frozen=True)
+class XAIConfig:
+    root_dir: Path
+    dataset_dir: Path
+    model_path: Path
+    output_dir: Path
+    num_samples: int

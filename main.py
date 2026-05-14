@@ -6,53 +6,66 @@ from kidney_disease_classification.pipeline.stage_02_data_validation import Data
 from kidney_disease_classification.pipeline.stage_04_training import TrainingPipeline
 from kidney_disease_classification.pipeline.stage_03_data_transformation import DataTransformationTrainingPipeline
 from kidney_disease_classification.pipeline.stage_05_evaluation import EvaluationPipeline
+from kidney_disease_classification.pipeline.stage_06_xai import XAIPipeline
 
 
 
-STAGE_NAME="Data Ingestion Stage"
-try:
-    logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
-    data_ingestion = DataIngestionTrainingPipeline()
-    data_ingestion.main()
-    logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
-except Exception as e:
-    raise CustomException(e, sys)
+# STAGE_NAME="Data Ingestion Stage"
+# try:
+#     logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
+#     data_ingestion = DataIngestionTrainingPipeline()
+#     data_ingestion.main()
+#     logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
+# except Exception as e:
+#     raise CustomException(e, sys)
 
 
-STAGE_NAME="Data Validation Stage"
-try:
-    logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
-    data_validation = DataValidationTrainingPipeline()
-    data_validation.main()
-    logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
-except Exception as e:
-    raise CustomException(e, sys)
+# STAGE_NAME="Data Validation Stage"
+# try:
+#     logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
+#     data_validation = DataValidationTrainingPipeline()
+#     data_validation.main()
+#     logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
+# except Exception as e:
+#     raise CustomException(e, sys)
 
 
-STAGE_NAME="Data Transformation Stage"
-try:
-    logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
-    prepare_base_model = DataTransformationTrainingPipeline()
-    prepare_base_model.main()
-    logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
-except Exception as e:
-    raise CustomException(e, sys)
+# STAGE_NAME="Data Transformation Stage"
+# try:
+#     logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
+#     prepare_base_model = DataTransformationTrainingPipeline()
+#     prepare_base_model.main()
+#     logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
+# except Exception as e:
+#     raise CustomException(e, sys)
 
 
-STAGE_NAME = "Traning stage"
-try:
-    logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
-    training_pipeline = TrainingPipeline()
-    training_pipeline.main()
-    logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
-except Exception as e:
-    raise CustomException(e, sys)
+# STAGE_NAME = "Traning stage"
+# try:
+#     logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
+#     training_pipeline = TrainingPipeline()
+#     training_pipeline.main()
+#     logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
+# except Exception as e:
+#     raise CustomException(e, sys)
 
-STAGE_NAME = "Evaluation stage"
-try:
-    logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
-    training_pipeline = EvaluationPipeline()
-    training_pipeline.main()
-    logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
-except Exception as e:
-    raise CustomException(e, sys)
+
+# STAGE_NAME = "Evaluation stage"
+# try:
+#     logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
+#     training_pipeline = EvaluationPipeline()
+#     training_pipeline.main()
+#     logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
+# except Exception as e:
+#     raise CustomException(e, sys)
+
+
+STAGE_NAME = "XAI stage"
+if __name__ == "__main__":
+    try:
+        logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
+        training_pipeline = XAIPipeline()
+        training_pipeline.main()
+        logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
+    except Exception as e:
+        raise CustomException(e, sys)

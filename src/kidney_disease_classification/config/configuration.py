@@ -1,7 +1,6 @@
 from kidney_disease_classification.constants import *
 from kidney_disease_classification.utils.common import read_yaml, create_directories
-from kidney_disease_classification.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, TrainingConfig, EvaluationConfig
-import os
+from kidney_disease_classification.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, TrainingConfig, EvaluationConfig, XAIConfig
 
 
 class ConfigurationManager:
@@ -94,3 +93,18 @@ class ConfigurationManager:
 
         return evaluation_config
       
+
+
+    def get_xai_config(self) -> XAIConfig:
+        config = self.config["xai"]
+
+        create_directories([config["root_dir"], config["output_dir"]])
+
+        evaluation_config = XAIConfig(
+            root_dir=config["root_dir"],
+            dataset_dir=config["dataset_dir"],
+            model_path=config["model_path"],
+            output_dir=config["output_dir"],
+            num_samples=config["num_samples"]
+        )
+        return evaluation_config
