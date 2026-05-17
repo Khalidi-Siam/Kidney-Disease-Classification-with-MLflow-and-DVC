@@ -1,0 +1,80 @@
+stages:
+  data_ingestion:
+    cmd: python src/kidney_disease_classification/pipeline/stage_01_data_ingestion.py
+    deps:
+      - src/kidney_disease_classification/pipeline/stage_01_data_ingestion.py
+      - config/config.yaml
+    outs:
+      - artifacts/data_ingestion/kidney-ct-scan-image
+
+  data_validation:
+    cmd: python src/kidney_disease_classification/pipeline/stage_02_data_validation.py
+    deps:
+      - src/kidney_disease_classification/pipeline/stage_02_data_validation.py
+      - config/config.yaml
+      - artifacts/data_ingestion/kidney-ct-scan-image
+    outs:
+      - artifacts/data_validation/status.txt
+      - artifacts/data_validation/validation_report.json
+
+  data_transformation:
+    cmd: python src/kidney_disease_classification/pipeline/stage_03_data_transformation.py
+    deps:
+      - src/kidney_disease_classification/pipeline/stage_03_data_transformation.py
+      - config/config.yaml
+      - artifacts/data_validation/status.txt
+      - artifacts/data_ingestion/kidney-ct-scan-image
+    params:
+      - IMAGE_SIZE
+      - TRAIN_SPLIT
+      - VAL_SPLIT
+      - TEST_SPLIT
+      - SEED
+      - AUGMENTATION
+    outs:
+      - artifacts/data_transformation/transformed_data
+
+  training:
+    cmd: python src/kidney_disease_classification/pipeline/stage_04_training.py
+    deps:
+      - src/kidney_disease_classification/pipeline/stage_04_training.py
+      - config/config.yaml
+      - artifacts/data_transformation/transformed_data
+    params:
+      - EPOCHS
+      - BATCH_SIZE
+      - MODEL_NAME
+      - PRETRAINED
+      - NUM_CLASSES
+      - LOSS_FUNCTION
+      - OPTIMIZER
+      - LEARNING_RATE
+      - WEIGHT_DECAY
+      - SEED
+    outs:
+      - artifacts/training/model/best_model.pth
+
+  evaluation:
+    cmd: python src/kidney_disease_classification/pipeline/stage_05_evaluation.py
+    deps:
+      - src/kidney_disease_classification/pipeline/stage_05_evaluation.py
+      - config/config.yaml
+      - artifacts/data_transformation/transformed_data
+      - artifacts/training/model/best_model.pth
+    params:
+      - IMAGE_SIZE
+      - BATCH_SIZE
+      - SEED
+    metrics:
+      - artifacts/evaluation/evaluation_report.json:
+          cache: false
+
+  xai:
+    cmd: python src/kidney_disease_classification/pipeline/stage_06_xai.py
+    deps:
+      - src/kidney_disease_classification/pipeline/stage_06_xai.py
+      - config/config.yaml
+      - artifacts/data_transformation/transformed_data
+      - artifacts/training/model/best_model.pth
+    outs:
+      - artifacts/xai/gradcam_outputs

@@ -1,5 +1,6 @@
-tensorflow
-pandas 
+pandas
+torch
+torchvision 
 dvc
 mlflow
 numpy

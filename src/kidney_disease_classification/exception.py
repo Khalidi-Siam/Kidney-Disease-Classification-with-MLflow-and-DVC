@@ -1,5 +1,5 @@
 import sys
-from src.kidney_disease_classification.logger import logging
+from kidney_disease_classification.logger import logging
 
 def error_message_detail(error, error_detail: sys):
     _, _, exc_tb = error_detail.exc_info()

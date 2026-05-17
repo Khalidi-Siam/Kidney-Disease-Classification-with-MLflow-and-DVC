@@ -29,10 +29,6 @@ training:
   model_dir: artifacts/training/model
   model_name: best_model.pth
 
-  log_dir: artifacts/training/logs
-
-  device: auto   # auto = cuda if available else cpu
-
   save_best_only: True
   monitor_metric: val_accuracy
 
