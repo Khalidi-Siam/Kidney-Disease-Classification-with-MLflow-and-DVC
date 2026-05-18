@@ -9,8 +9,7 @@ tqdm
 joblib
 types-PyYAML
 scipy
-Flask
-Flask-Cors
+streamlit
 gdown
 opencv-python
 -e .

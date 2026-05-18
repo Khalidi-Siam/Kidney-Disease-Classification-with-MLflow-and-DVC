@@ -4,14 +4,14 @@ import torch.nn as nn
 from pathlib import Path
 from PIL import Image
 from torchvision import transforms, models
-
+from kidney_disease_classification.entity.config_entity import PredictionConfig
 from kidney_disease_classification.exception import CustomException
 from kidney_disease_classification.logger import logging
 
 
-class PredictionPipeline:
-    def __init__(self, model_path: str, params: dict):
-        self.model_path = model_path
+class Prediction:
+    def __init__(self, config: PredictionConfig, params):
+        self.config = config
         self.params = params
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -30,7 +30,7 @@ class PredictionPipeline:
             in_features = model.classifier[1].in_features
             model.classifier[1] = nn.Linear(in_features, self.params["NUM_CLASSES"])
 
-            model.load_state_dict(torch.load(self.model_path, map_location=self.device))
+            model.load_state_dict(torch.load(self.config.model_path, map_location=self.device))
             model.to(self.device)
             model.eval()
 

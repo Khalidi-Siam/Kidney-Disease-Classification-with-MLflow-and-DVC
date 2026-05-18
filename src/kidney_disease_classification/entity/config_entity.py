@@ -60,3 +60,8 @@ class XAIConfig:
     model_path: Path
     output_dir: Path
     num_samples: int
+
+
+@dataclass(frozen=True)
+class PredictionConfig:
+    model_path: Path

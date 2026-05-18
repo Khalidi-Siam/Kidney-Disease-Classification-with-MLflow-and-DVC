@@ -1,6 +1,6 @@
 from kidney_disease_classification.constants import *
 from kidney_disease_classification.utils.common import read_yaml, create_directories
-from kidney_disease_classification.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, TrainingConfig, EvaluationConfig, XAIConfig
+from kidney_disease_classification.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, TrainingConfig, EvaluationConfig, XAIConfig, PredictionConfig
 
 
 class ConfigurationManager:
@@ -114,3 +114,13 @@ class ConfigurationManager:
             num_samples=config["num_samples"]
         )
         return evaluation_config
+    
+
+    def get_prediction_config(self) -> PredictionConfig:
+        config = self.config["prediction"]
+
+        prediction_config = PredictionConfig(
+            model_path=config["model_path"]
+        )
+
+        return prediction_config

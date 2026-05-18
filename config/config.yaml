@@ -58,3 +58,7 @@ xai:
   dataset_dir: artifacts/data_transformation/transformed_data
   output_dir: artifacts/xai/gradcam_outputs
   num_samples: 20
+
+
+prediction:
+  model_path: artifacts/training/model/best_model.pth
