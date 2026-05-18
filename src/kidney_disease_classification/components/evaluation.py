@@ -36,9 +36,13 @@ class Evaluation:
             in_features = model.classifier[1].in_features
             model.classifier[1] = nn.Linear(in_features, self.params["NUM_CLASSES"])
 
-            model.load_state_dict(
-                torch.load(self.config.model_path, map_location=self.device)
-            )
+            checkpoint = torch.load(self.config.model_path, map_location=self.device)
+            
+            # Handle both the new packaged checkpoint (dict with state_dict) and old direct state_dict
+            if isinstance(checkpoint, dict) and "state_dict" in checkpoint and "params" in checkpoint:
+                model.load_state_dict(checkpoint["state_dict"])
+            else:
+                model.load_state_dict(checkpoint)
 
             model.to(self.device)
             model.eval()

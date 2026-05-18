@@ -205,7 +205,12 @@ class Training:
 
                         model_path = os.path.join(self.config.model_dir, self.config.model_name)
 
-                        torch.save(model.state_dict(), model_path)
+                        # Package params inside the checkpoint
+                        checkpoint = {
+                            "state_dict": model.state_dict(),
+                            "params": self.params
+                        }
+                        torch.save(checkpoint, model_path)
 
                         logging.info(f"Best model saved with accuracy: {best_val_acc:.4f}")
 

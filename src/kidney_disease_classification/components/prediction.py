@@ -29,8 +29,20 @@ class Prediction:
 
             in_features = model.classifier[1].in_features
             model.classifier[1] = nn.Linear(in_features, self.params["NUM_CLASSES"])
+            
+            # Load the checkpoint
+            checkpoint = torch.load(self.config.model_path, map_location=self.device)
+            
+            # Backward compatibility check. See if it's the new packaged checkpoint or old state_dict
+            if isinstance(checkpoint, dict) and "state_dict" in checkpoint and "params" in checkpoint:
+                model.load_state_dict(checkpoint["state_dict"])
+                # Override the pipeline's params with the one packaged in the model
+                self.params = checkpoint["params"] 
+                logging.info("Model state and bundled params loaded from checkpoint.")
+            else:
+                model.load_state_dict(checkpoint)
+                logging.info("Legacy model state_dict loaded.")
 
-            model.load_state_dict(torch.load(self.config.model_path, map_location=self.device))
             model.to(self.device)
             model.eval()
 

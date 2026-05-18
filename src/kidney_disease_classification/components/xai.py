@@ -34,7 +34,13 @@ class XAI:
             in_features = model.classifier[1].in_features
             model.classifier[1] = nn.Linear(in_features, self.params["NUM_CLASSES"])
 
-            model.load_state_dict(torch.load(self.config.model_path, map_location=self.device))
+            checkpoint = torch.load(self.config.model_path, map_location=self.device)
+            
+            if isinstance(checkpoint, dict) and "state_dict" in checkpoint and "params" in checkpoint:
+                model.load_state_dict(checkpoint["state_dict"])
+            else:
+                model.load_state_dict(checkpoint)
+
             model.to(self.device)
             model.eval()
 
@@ -78,7 +84,8 @@ class XAI:
     # ---------------------------
     # 4. OVERLAY HEATMAP
     # ---------------------------
-    def overlay_heatmap(self, original_img, cam):
+    @staticmethod
+    def overlay_heatmap(original_img, cam):
         original_img = np.array(original_img)
 
         if len(original_img.shape) == 2:

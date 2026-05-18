@@ -24,8 +24,8 @@ class XAIPipeline:
 if __name__ == "__main__":
     try:
         logging.info(f">>>>>>> stage {STAGE_NAME} started <<<<<<<")
-        training_pipeline = XAIPipeline()
-        training_pipeline.main()
+        xai_pipeline = XAIPipeline()
+        xai_pipeline.main()
         logging.info(f">>>>>>> stage {STAGE_NAME} completed <<<<<<<\n\nx==========x")
     except Exception as e:
         raise CustomException(e, sys)
