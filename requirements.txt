@@ -9,3 +9,4 @@ types-PyYAML
 scipy
 streamlit
 opencv-python-headless
+-e .
