@@ -6,8 +6,8 @@ stages:
     deps:
     - path: config/config.yaml
       hash: md5
-      md5: d18264ed56696ffb3fdc0988f782b79c
-      size: 1564
+      md5: 464c5df7a545c2c302ea8d05a979332c
+      size: 1877
     - path: 
         src/kidney_disease_classification/pipeline/stage_01_data_ingestion.py
       hash: md5
@@ -30,8 +30,8 @@ stages:
       nfiles: 465
     - path: config/config.yaml
       hash: md5
-      md5: d18264ed56696ffb3fdc0988f782b79c
-      size: 1564
+      md5: 464c5df7a545c2c302ea8d05a979332c
+      size: 1877
     - path: 
         src/kidney_disease_classification/pipeline/stage_02_data_validation.py
       hash: md5
@@ -57,12 +57,12 @@ stages:
       nfiles: 465
     - path: artifacts/data_validation/status.txt
       hash: md5
-      md5: f827cf462f62848df37c5e1e94a4da74
-      size: 4
+      md5: 86e6a2f694c57a675b3e2da6b95ff9ba
+      size: 23
     - path: config/config.yaml
       hash: md5
-      md5: d18264ed56696ffb3fdc0988f782b79c
-      size: 1564
+      md5: 464c5df7a545c2c302ea8d05a979332c
+      size: 1877
     - path: 
         src/kidney_disease_classification/pipeline/stage_03_data_transformation.py
       hash: md5
@@ -94,8 +94,8 @@ stages:
       nfiles: 465
     - path: config/config.yaml
       hash: md5
-      md5: d18264ed56696ffb3fdc0988f782b79c
-      size: 1564
+      md5: 464c5df7a545c2c302ea8d05a979332c
+      size: 1877
     - path: src/kidney_disease_classification/pipeline/stage_04_training.py
       hash: md5
       md5: d0850052fd354208962ad24e15cdde82
@@ -115,7 +115,7 @@ stages:
     outs:
     - path: artifacts/training/model/best_model.pth
       hash: md5
-      md5: 0cdc497e542279773ab40ef9260bb070
+      md5: 2410606dcd8bb394ad4fb53ce11cc17c
       size: 16329785
   evaluation:
     cmd: python 
@@ -128,12 +128,12 @@ stages:
       nfiles: 465
     - path: artifacts/training/model/best_model.pth
       hash: md5
-      md5: 0cdc497e542279773ab40ef9260bb070
+      md5: 2410606dcd8bb394ad4fb53ce11cc17c
       size: 16329785
     - path: config/config.yaml
       hash: md5
-      md5: d18264ed56696ffb3fdc0988f782b79c
-      size: 1564
+      md5: 464c5df7a545c2c302ea8d05a979332c
+      size: 1877
     - path: src/kidney_disease_classification/pipeline/stage_05_evaluation.py
       hash: md5
       md5: e0acd533f15e0922986b350eaacfcb92
@@ -148,8 +148,8 @@ stages:
     outs:
     - path: artifacts/evaluation/evaluation_report.json
       hash: md5
-      md5: cc11b799ec3bceefc75cde4cebcf5e05
-      size: 287
+      md5: a0a0d5474b97516195f28557ceca6b0c
+      size: 274
   xai:
     cmd: python src/kidney_disease_classification/pipeline/stage_06_xai.py
     deps:
@@ -160,12 +160,12 @@ stages:
       nfiles: 465
     - path: artifacts/training/model/best_model.pth
       hash: md5
-      md5: 0cdc497e542279773ab40ef9260bb070
+      md5: 2410606dcd8bb394ad4fb53ce11cc17c
       size: 16329785
     - path: config/config.yaml
       hash: md5
-      md5: d18264ed56696ffb3fdc0988f782b79c
-      size: 1564
+      md5: 464c5df7a545c2c302ea8d05a979332c
+      size: 1877
     - path: src/kidney_disease_classification/pipeline/stage_06_xai.py
       hash: md5
       md5: 522085d026136c73d46ea37659809e54
@@ -173,6 +173,6 @@ stages:
     outs:
     - path: artifacts/xai/gradcam_outputs
       hash: md5
-      md5: 3630d0710f5d669c488eb93a9986112f.dir
-      size: 4624452
-      nfiles: 20
+      md5: 7120fced32540cc882530890985b9ad8.dir
+      size: 5256512
+      nfiles: 21

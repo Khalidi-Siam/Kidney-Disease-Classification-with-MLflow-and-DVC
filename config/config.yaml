@@ -25,6 +25,8 @@ data_transformation:
 training:
   root_dir: artifacts/training
   dataset_dir: artifacts/data_transformation/transformed_data
+  mlflow_tracking_uri: http://localhost:5000
+  mlflow_experiment_name: Kidney_Disease_Classification
 
   model_dir: artifacts/training/model
   model_name: best_model.pth
@@ -39,6 +41,9 @@ training:
 evaluation:
   root_dir: artifacts/evaluation
   dataset_dir: artifacts/data_transformation/transformed_data
+  mlflow_tracking_uri: http://localhost:5000
+  mlflow_experiment_name: Kidney_Disease_Classification
+
   model_path: artifacts/training/model/best_model.pth
   report_file: artifacts/evaluation/evaluation_report.json
   confusion_matrix_file: artifacts/evaluation/confusion_matrix.json
@@ -47,6 +52,9 @@ evaluation:
 xai:
   root_dir: artifacts/xai
   model_path: artifacts/training/model/best_model.pth
+  mlflow_tracking_uri: http://localhost:5000
+  mlflow_experiment_name: Kidney_Disease_Classification
+
   dataset_dir: artifacts/data_transformation/transformed_data
   output_dir: artifacts/xai/gradcam_outputs
   num_samples: 20

@@ -68,6 +68,8 @@ class ConfigurationManager:
         training_config = TrainingConfig(
             root_dir=config["root_dir"],
             dataset_dir=config["dataset_dir"],
+            mlflow_tracking_uri=config["mlflow_tracking_uri"],
+            mlflow_experiment_name=config["mlflow_experiment_name"],
             model_dir=config["model_dir"],
             model_name=config["model_name"],
             save_best_only=config["save_best_only"],
@@ -86,6 +88,8 @@ class ConfigurationManager:
         evaluation_config = EvaluationConfig(
             root_dir = config["root_dir"],
             dataset_dir = config["dataset_dir"],
+            mlflow_tracking_uri=config["mlflow_tracking_uri"],
+            mlflow_experiment_name=config["mlflow_experiment_name"],
             model_path = config["model_path"],
             report_file = config["report_file"],
             confusion_matrix_file = config["confusion_matrix_file"]
@@ -103,6 +107,8 @@ class ConfigurationManager:
         evaluation_config = XAIConfig(
             root_dir=config["root_dir"],
             dataset_dir=config["dataset_dir"],
+            mlflow_tracking_uri=config["mlflow_tracking_uri"],
+            mlflow_experiment_name=config["mlflow_experiment_name"],
             model_path=config["model_path"],
             output_dir=config["output_dir"],
             num_samples=config["num_samples"]

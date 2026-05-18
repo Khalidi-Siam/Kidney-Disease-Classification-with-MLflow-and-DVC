@@ -5,6 +5,11 @@ import torch.nn as nn
 from torchvision import datasets, transforms, models
 from torch.utils.data import DataLoader
 from pathlib import Path
+
+import mlflow
+import mlflow.pytorch
+
+
 from kidney_disease_classification.entity.config_entity import TrainingConfig
 from kidney_disease_classification.exception import CustomException
 from kidney_disease_classification.logger import logging
@@ -161,30 +166,56 @@ class Training:
             )
 
             best_val_acc = 0.0
+            mlflow.set_tracking_uri(self.config.mlflow_tracking_uri)  # Adjust if your MLflow server is hosted elsewhere
+            mlflow.set_experiment(self.config.mlflow_experiment_name)
 
-            for epoch in range(self.params["EPOCHS"]):
-                train_loss = self.train_one_epoch(model, train_loader, criterion, optimizer)
-                val_loss, val_acc = self.validate(model, val_loader, criterion)
+            with mlflow.start_run(run_name="training_run"):
 
-                logging.info(
-                    f"Epoch [{epoch+1}/{self.params['EPOCHS']}] "
-                    f"Train Loss: {train_loss:.4f} | "
-                    f"Val Loss: {val_loss:.4f} | "
-                    f"Val Acc: {val_acc:.4f}"
-                )
+                # Log hyperparameters
+                mlflow.log_params({
+                    "MODEL_NAME": self.params["MODEL_NAME"],
+                    "PRETRAINED": self.params["PRETRAINED"],
+                    "IMAGE_SIZE": self.params["IMAGE_SIZE"],
+                    "BATCH_SIZE": self.params["BATCH_SIZE"],
+                    "EPOCHS": self.params["EPOCHS"],
+                    "LEARNING_RATE": self.params["LEARNING_RATE"],
+                    "WEIGHT_DECAY": self.params["WEIGHT_DECAY"],
+                    "LOSS_FUNCTION": self.params["LOSS_FUNCTION"],
+                    "OPTIMIZER": self.params["OPTIMIZER"]
+                })
 
-                # Save best model
-                if val_acc > best_val_acc:
-                    best_val_acc = val_acc
+                for epoch in range(self.params["EPOCHS"]):
+                    train_loss = self.train_one_epoch(model, train_loader, criterion, optimizer)
+                    val_loss, val_acc = self.validate(model, val_loader, criterion)
 
-                    model_path = os.path.join(self.config.model_dir, self.config.model_name)
+                    logging.info(
+                        f"Epoch [{epoch+1}/{self.params['EPOCHS']}] "
+                        f"Train Loss: {train_loss:.4f} | "
+                        f"Val Loss: {val_loss:.4f} | "
+                        f"Val Acc: {val_acc:.4f}"
+                    )
 
-                    torch.save(model.state_dict(), model_path)
+                    mlflow.log_metric("train_loss", train_loss, step=epoch)
+                    mlflow.log_metric("val_loss", val_loss, step=epoch)
+                    mlflow.log_metric("val_accuracy", val_acc, step=epoch)
 
-                    logging.info(f"Best model saved with accuracy: {best_val_acc:.4f}")
+                    # Save best model
+                    if val_acc > best_val_acc:
+                        best_val_acc = val_acc
+
+                        model_path = os.path.join(self.config.model_dir, self.config.model_name)
+
+                        torch.save(model.state_dict(), model_path)
+
+                        logging.info(f"Best model saved with accuracy: {best_val_acc:.4f}")
+
+                mlflow.log_metric("best_val_accuracy", best_val_acc)
+                # mlflow.log_artifact(model_path, artifact_path="model")
+                mlflow.pytorch.log_model(pytorch_model=model, artifact_path="model")
+
+                logging.info("Model artifact logged to MLflow")
 
             logging.info("Training stage completed successfully")
-
             return True
 
         except Exception as e:

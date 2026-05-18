@@ -30,6 +30,8 @@ class DataTransformationConfig:
 class TrainingConfig:
     root_dir: Path
     dataset_dir: Path
+    mlflow_tracking_uri: str
+    mlflow_experiment_name: str
     model_dir: Path
     model_name: str
     save_best_only: bool
@@ -42,6 +44,8 @@ class TrainingConfig:
 class EvaluationConfig:
     root_dir: Path
     dataset_dir: Path
+    mlflow_tracking_uri: str
+    mlflow_experiment_name: str
     model_path: Path
     report_file: Path
     confusion_matrix_file: Path
@@ -51,6 +55,8 @@ class EvaluationConfig:
 class XAIConfig:
     root_dir: Path
     dataset_dir: Path
+    mlflow_tracking_uri: str
+    mlflow_experiment_name: str
     model_path: Path
     output_dir: Path
     num_samples: int

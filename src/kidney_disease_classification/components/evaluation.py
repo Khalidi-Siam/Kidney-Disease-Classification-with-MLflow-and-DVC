@@ -12,7 +12,7 @@ from sklearn.metrics import (
     roc_auc_score,
     confusion_matrix
 )
-
+import mlflow
 from kidney_disease_classification.exception import CustomException
 from kidney_disease_classification.logger import logging
 from kidney_disease_classification.utils.common import save_json
@@ -85,64 +85,81 @@ class Evaluation:
     def evaluate_model(self):
         try:
             logging.info("Evaluation stage started...")
+            mlflow.set_tracking_uri(self.config.mlflow_tracking_uri)
+            mlflow.set_experiment(self.config.mlflow_experiment_name)
 
-            model = self.load_model()
-            test_loader = self.get_test_loader()
+            
+            with mlflow.start_run(run_name="evaluation_run"):
 
-            y_true = []
-            y_pred = []
-            y_probs = []
+                model = self.load_model()
+                test_loader = self.get_test_loader()
 
-            with torch.no_grad():
-                for images, labels in test_loader:
-                    images = images.to(self.device)
-                    labels = labels.to(self.device)
+                y_true = []
+                y_pred = []
+                y_probs = []
 
-                    outputs = model(images).squeeze()
-                    probs = torch.sigmoid(outputs)
-                    preds = (probs > 0.5).int()
+                with torch.no_grad():
+                    for images, labels in test_loader:
+                        images = images.to(self.device)
+                        labels = labels.to(self.device)
 
-                    y_true.extend(labels.cpu().numpy())
-                    y_pred.extend(preds.cpu().numpy())
-                    y_probs.extend(probs.cpu().numpy())
+                        outputs = model(images).squeeze()
+                        probs = torch.sigmoid(outputs)
+                        preds = (probs > 0.5).int()
 
-            # Metrics
-            acc = accuracy_score(y_true, y_pred)
-            precision = precision_score(y_true, y_pred)
-            recall = recall_score(y_true, y_pred)
-            f1 = f1_score(y_true, y_pred)
-            auc = roc_auc_score(y_true, y_probs)
+                        y_true.extend(labels.cpu().numpy())
+                        y_pred.extend(preds.cpu().numpy())
+                        y_probs.extend(probs.cpu().numpy())
 
-            cm = confusion_matrix(y_true, y_pred)
-            tn, fp, fn, tp = cm.ravel()
+                # Metrics
+                acc = accuracy_score(y_true, y_pred)
+                precision = precision_score(y_true, y_pred)
+                recall = recall_score(y_true, y_pred)
+                f1 = f1_score(y_true, y_pred)
+                auc = roc_auc_score(y_true, y_probs)
 
-            specificity = tn / (tn + fp)
+                cm = confusion_matrix(y_true, y_pred)
+                tn, fp, fn, tp = cm.ravel()
 
-            report = {
-                "accuracy": float(acc),
-                "precision": float(precision),
-                "recall_sensitivity": float(recall),
-                "specificity": float(specificity),
-                "f1_score": float(f1),
-                "roc_auc": float(auc),
-                "tp": int(tp),
-                "tn": int(tn),
-                "fp": int(fp),
-                "fn": int(fn)
-            }
+                specificity = tn / (tn + fp)
 
-            # Save evaluation report
-            save_json(self.config.report_file, report)
+                report = {
+                    "accuracy": float(acc),
+                    "precision": float(precision),
+                    "recall": float(recall),
+                    "specificity": float(specificity),
+                    "f1_score": float(f1),
+                    "roc_auc": float(auc),
+                    "tp": int(tp),
+                    "tn": int(tn),
+                    "fp": int(fp),
+                    "fn": int(fn)
+                }
 
-            # Save confusion matrix separately
-            save_json(self.config.confusion_matrix_file, {
-                "confusion_matrix": cm.tolist()
-            })
+                # Save evaluation report
+                save_json(self.config.report_file, report)
 
-            logging.info("Evaluation completed successfully.")
-            logging.info(f"Evaluation Report: {report}")
+                # Save confusion matrix separately
+                save_json(self.config.confusion_matrix_file, {
+                    "confusion_matrix": cm.tolist()
+                })
 
-            return report
+                mlflow.log_metrics({
+                    "accuracy": acc,
+                    "precision": precision,
+                    "recall": recall,
+                    "specificity": specificity,
+                    "f1_score": f1,
+                    "roc_auc": auc
+                })
+
+                mlflow.log_artifact(self.config.report_file, artifact_path="evaluation_report")
+                mlflow.log_artifact(self.config.confusion_matrix_file, artifact_path="evaluation_report")
+
+                logging.info("Evaluation completed successfully.")
+                logging.info(f"Evaluation Report: {report}")
+
+                return report
 
         except Exception as e:
             raise CustomException(e, sys)

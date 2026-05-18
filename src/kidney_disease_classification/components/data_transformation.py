@@ -117,11 +117,6 @@ class DataTransformation:
             self.save_split(val_data, "val")
             self.save_split(test_data, "test")
 
-            # Step 5: save status
-            os.makedirs(self.config.root_dir, exist_ok=True)
-            with open(self.config.status_file, "w") as f:
-                f.write("True")
-
             logging.info("Data transformation completed successfully")
 
             return True

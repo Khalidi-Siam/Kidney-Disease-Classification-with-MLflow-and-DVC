@@ -1,11 +1,12 @@
 import os
 import sys
+import json
 import random
 import torch
 import torch.nn as nn
 import numpy as np
 import cv2
-
+import mlflow
 from pathlib import Path
 from PIL import Image
 from torchvision import transforms, models
@@ -99,39 +100,67 @@ class XAI:
         try:
             logging.info("Starting Grad-CAM XAI stage...")
 
-            os.makedirs(self.config.output_dir, exist_ok=True)
+            mlflow.set_tracking_uri(self.config.mlflow_tracking_uri)
+            mlflow.set_experiment(self.config.mlflow_experiment_name)
 
-            model = self.load_model()
-            transform = self.get_transform()
 
-            # EfficientNet target conv layer
-            target_layer = model.features[-1]
+            with mlflow.start_run(run_name="xai_run"):
+                model = self.load_model()
+                transform = self.get_transform()
 
-            gradcam = GradCAM(model, target_layer)
+                # EfficientNet target conv layer
+                target_layer = model.features[-1]
 
-            sample_images = self.get_sample_images()
+                gradcam = GradCAM(model, target_layer)
 
-            for img_path in sample_images:
-                img = Image.open(img_path).convert("RGB")
-                input_tensor = transform(img).unsqueeze(0).to(self.device)
+                sample_images = self.get_sample_images()
 
-                output = model(input_tensor).squeeze()
-                prob = torch.sigmoid(output).item()
+                normal_count = 0
+                disease_count = 0
 
-                pred_label = "disease" if prob > 0.5 else "normal"
+                for img_path in sample_images:
+                    img = Image.open(img_path).convert("RGB")
+                    input_tensor = transform(img).unsqueeze(0).to(self.device)
 
-                cam = gradcam.generate_cam(input_tensor)
+                    output = model(input_tensor).squeeze()
+                    
+                    prob = torch.sigmoid(output).item()
+                    pred_label = "disease" if prob > 0.5 else "normal"
 
-                overlay = self.overlay_heatmap(img, cam)
+                    if pred_label == "disease":
+                        disease_count += 1
+                    else:
+                        normal_count += 1
 
-                save_path = os.path.join(
-                    self.config.output_dir,
-                    f"{img_path.stem}_pred_{pred_label}_prob_{prob:.2f}.png"
-                )
+                    cam = gradcam.generate_cam(input_tensor)
 
-                Image.fromarray(overlay).save(save_path)
+                    overlay = self.overlay_heatmap(img, cam)
 
-                logging.info(f"Saved Grad-CAM: {save_path}")
+                    save_path = os.path.join(
+                        self.config.output_dir,
+                        f"{img_path.stem}_pred_{pred_label}_prob_{prob:.2f}.png"
+                    )
+
+                    Image.fromarray(overlay).save(save_path)
+                    mlflow.log_artifact(save_path, artifact_path="gradcam_outputs")
+                    logging.info(f"Saved Grad-CAM: {save_path}")
+
+                summary = {
+                    "total_images": len(sample_images),
+                    "output_dir": self.config.output_dir
+                }
+
+                summary_path = os.path.join(self.config.output_dir, "xai_summary.json")
+
+                with open(summary_path, "w") as f:
+                    json.dump(summary, f, indent=4)
+
+                mlflow.log_artifact(summary_path, artifact_path="xai_summary")
+
+                mlflow.log_metrics({
+                    "normal_predictions": normal_count,
+                    "disease_predictions": disease_count
+                })
 
             logging.info("Grad-CAM XAI stage completed successfully.")
             return True

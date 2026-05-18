@@ -208,6 +208,10 @@ __marimo__/
 
 artifacts/
 
-# DVC files
-.dvc/
-.dvcignore
+# dvc
+.dvc/cache
+.dvc/tmp
+
+# mlflow
+mlflow.db
+mlruns/
