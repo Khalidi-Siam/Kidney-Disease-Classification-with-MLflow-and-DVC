@@ -1,15 +1,12 @@
-pandas
+--extra-index-url https://download.pytorch.org/whl/cpu
 torch
-torchvision 
-dvc
+torchvision
+pandas 
 mlflow
 numpy
 pyYAML
-tqdm
 joblib
 types-PyYAML
 scipy
 streamlit
-gdown
-opencv-python
--e .
+opencv-python-headless

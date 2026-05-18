@@ -1,7 +1,6 @@
 import sys
 import torch
 import torch.nn as nn
-from pathlib import Path
 from PIL import Image
 from torchvision import transforms, models
 from kidney_disease_classification.entity.config_entity import PredictionConfig

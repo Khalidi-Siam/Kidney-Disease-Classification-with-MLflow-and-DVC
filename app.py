@@ -2,7 +2,6 @@
 import os
 import json
 import torch
-import numpy as np
 from PIL import Image
 from kidney_disease_classification.pipeline.stage_07_prediction import PredictionPipeline
 from kidney_disease_classification.components.gradcam import GradCAM
