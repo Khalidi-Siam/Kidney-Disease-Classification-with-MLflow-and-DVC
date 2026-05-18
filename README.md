@@ -1,4 +1,4 @@
-# 🏥 Kidney Disease Classification from CT Scan Images
+# Kidney Disease Classification from CT Scan Images
 
 > An end-to-end MLOps project classifying kidney CT scans as **Normal vs. Tumor** using Deep Learning, full pipeline reproducibility via **DVC**, comprehensive experiment tracking via **MLflow**, and transparent predictions with **Explainable AI (Grad-CAM)** — all served through an interactive **Streamlit** application.
 
@@ -12,24 +12,24 @@
 
 ---
 
-## 📌 Table of Contents
-- [Project Overview](#-project-overview)
-- [Key Features](#-key-features)
-- [Tech Stack](#-tech-stack)
-- [ML Pipeline Architecture](#-ml-pipeline-architecture)
-- [Project Structure](#-project-structure)
-- [Model & Hyperparameters](#-model--hyperparameters)
-- [Evaluation Metrics](#-evaluation-metrics)
-- [MLflow Experiment Tracking](#-mlflow-experiment-tracking)
-- [Explainable AI (Grad-CAM)](#-explainable-ai-grad-cam)
-- [Getting Started](#-getting-started)
-- [Running the Application](#-running-the-application)
-- [Dataset](#-dataset)
-- [Limitations](#-limitations)
+## Table of Contents
+- [Project Overview](#project-overview)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [ML Pipeline Architecture](#ml-pipeline-architecture)
+- [Project Structure](#project-structure)
+- [Model & Hyperparameters](#model--hyperparameters)
+- [Evaluation Metrics](#evaluation-metrics)
+- [MLflow Experiment Tracking](#mlflow-experiment-tracking)
+- [Explainable AI (Grad-CAM)](#explainable-ai-grad-cam)
+- [Getting Started](#getting-started)
+- [Running the Application](#running-the-application)
+- [Dataset](#dataset)
+- [Limitations](#limitations)
 
 ---
 
-## 🔍 Project Overview
+## Project Overview
 
 Kidney disease diagnosis from CT scan images is a critical clinical challenge. Manual inspection is slow and subject to error. This project builds a fully automated, production-ready classification pipeline that:
 
@@ -41,24 +41,24 @@ Kidney disease diagnosis from CT scan images is a critical clinical challenge. M
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
 | Feature | Description |
 |---|---|
-| 🧠 **Transfer Learning** | `EfficientNet-B0` (also supports `ResNet50`, `DenseNet121`) for binary classification |
-| 📦 **DVC Pipeline** | 6-stage reproducible pipeline: Ingestion → Validation → Transformation → Training → Evaluation → XAI |
-| 📊 **MLflow Tracking** | Tracks hyperparameters, loss curves, evaluation metrics, and Grad-CAM artifacts across 3 stages |
-| 🔍 **Explainable AI** | Grad-CAM heatmaps visually highlight which CT scan regions influenced the model's prediction |
-| 🛡️ **Data Validation** | Automated dataset integrity checks with JSON validation report before any training begins |
-| ⚡ **Early Stopping** | Configurable patience-based early stopping to prevent overfitting during training |
-| 💾 **Smart Checkpointing** | Saves best model based on `val_accuracy`; checkpoint bundles weights + training params together |
-| 🖥️ **Interactive UI** | Streamlit app with real-time prediction, confidence scores, Grad-CAM overlay, and model metadata panel |
-| 🐍 **Installable Package** | Source code structured as a Python package (`setup.py`) for clean imports across all modules |
-| 📓 **Research Notebooks** | 6 isolated Jupyter notebooks prototype each pipeline stage independently before modularization |
+| **Transfer Learning** | `EfficientNet-B0` (also supports `ResNet50`, `DenseNet121`) for binary classification |
+| **DVC Pipeline** | 6-stage reproducible pipeline: Ingestion → Validation → Transformation → Training → Evaluation → XAI |
+| **MLflow Tracking** | Tracks hyperparameters, loss curves, evaluation metrics, and Grad-CAM artifacts across 3 stages |
+| **Explainable AI** | Grad-CAM heatmaps visually highlight which CT scan regions influenced the model's prediction |
+| **Data Validation** | Automated dataset integrity checks with JSON validation report before any training begins |
+| **Early Stopping** | Configurable patience-based early stopping to prevent overfitting during training |
+| **Smart Checkpointing** | Saves best model based on `val_accuracy`; checkpoint bundles weights + training params together |
+| **Interactive UI** | Streamlit app with real-time prediction, confidence scores, Grad-CAM overlay, and model metadata panel |
+| **Installable Package** | Source code structured as a Python package (`setup.py`) for clean imports across all modules |
+| **Research Notebooks** | 6 isolated Jupyter notebooks prototype each pipeline stage independently before modularization |
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Category | Tools / Libraries |
 |---|---|
@@ -74,7 +74,7 @@ Kidney disease diagnosis from CT scan images is a critical clinical challenge. M
 
 ---
 
-## 🔄 ML Pipeline Architecture
+## ML Pipeline Architecture
 
 The DVC pipeline consists of **6 reproducible stages**, each with explicit dependencies and outputs tracked by DVC:
 
@@ -106,7 +106,7 @@ DVC only re-runs stages whose dependencies have changed, making iteration fast a
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 Kidney-Disease-Classification-with-MLflow-and-DVC/
@@ -172,7 +172,7 @@ Kidney-Disease-Classification-with-MLflow-and-DVC/
 
 ---
 
-## ⚙️ Model & Hyperparameters
+## Model & Hyperparameters
 
 All hyperparameters live in [`params.yaml`](params.yaml) — the **single source of truth** consumed by DVC and MLflow:
 
@@ -198,7 +198,7 @@ All hyperparameters live in [`params.yaml`](params.yaml) — the **single source
 
 ---
 
-## 📊 Evaluation Metrics
+## Evaluation Metrics
 
 The evaluation stage computes and logs the following metrics to both a JSON report and MLflow:
 
@@ -216,7 +216,7 @@ Metrics are saved to `artifacts/evaluation/evaluation_report.json` and displayed
 
 ---
 
-## 📈 MLflow Experiment Tracking
+## MLflow Experiment Tracking
 
 MLflow tracks every run under the experiment name **`Kidney_Disease_Classification`** across **3 pipeline stages**:
 
@@ -234,7 +234,7 @@ Then navigate to **`http://localhost:5000`** to compare runs, inspect metrics, a
 
 ---
 
-## 🔬 Explainable AI (Grad-CAM)
+## Explainable AI (Grad-CAM)
 
 Medical AI demands transparency. This project integrates **Gradient-weighted Class Activation Mapping (Grad-CAM)** to answer *"Why did the model predict this?"*
 
@@ -247,7 +247,7 @@ Red/warm regions in the heatmap indicate areas the model focused on most heavily
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Python 3.8+
@@ -285,7 +285,7 @@ dvc repro
 
 ---
 
-## 🖥️ Running the Application
+## Running the Application
 
 ### Launch the Streamlit App
 ```bash
@@ -293,10 +293,10 @@ streamlit run app.py
 ```
 
 The app provides:
-- 📤 **Upload** any kidney CT scan (`.jpg`, `.jpeg`, `.png`)
-- 🔮 **Prediction** with confidence score (Normal / Tumor)
-- 🌡️ **Grad-CAM heatmap** overlay showing model attention areas
-- 📊 **Model information sidebar** — training parameters + evaluation metrics
+- **Upload** any kidney CT scan (`.jpg`, `.jpeg`, `.png`)
+- **Prediction** with confidence score (Normal / Tumor)
+- **Grad-CAM heatmap** overlay showing model attention areas
+- **Model information sidebar** — training parameters + evaluation metrics
 
 ### View MLflow Experiments
 ```bash
@@ -306,7 +306,7 @@ Access at `http://localhost:5000`
 
 ---
 
-## 🗂️ Dataset
+## Dataset
 
 The dataset used is the **CT Kidney Dataset** (binary subset: Normal vs. Tumor).
 
@@ -317,7 +317,7 @@ The dataset used is the **CT Kidney Dataset** (binary subset: Normal vs. Tumor).
 
 ---
 
-## ⚠️ Limitations
+## Limitations
 
 | Limitation | Details |
 |---|---|
